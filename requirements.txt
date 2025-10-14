@@ -9,3 +9,4 @@ boto3
 psycopg2-binary
 requests
 pytest
+importlib-metadata==6.8.0
