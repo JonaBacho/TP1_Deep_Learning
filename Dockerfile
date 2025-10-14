@@ -1,17 +1,45 @@
 # Dockerfile
-FROM python:3.9-slim
+# Utiliser une image Python slim
+FROM python:3.10-slim
 
+# Définir les arguments de build
+ARG PYTHON_VERSION=3.10
+
+# Variables d'environnement
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Créer un utilisateur non-root
+RUN useradd -m -u 1000 appuser && \
+    mkdir -p /app && \
+    chown -R appuser:appuser /app
+
+# Définir le répertoire de travail
 WORKDIR /app
 
-# Installer dépendances système utiles (si besoin)
-RUN apt-get update && apt-get install -y --no-install-recommends gcc libatlas-base-dev && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-
+# Copier les requirements et installer les dépendances
+COPY --chown=appuser:appuser requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copier le code de l'application
+COPY --chown=appuser:appuser src/ ./src/
+COPY --chown=appuser:appuser config/ ./config/
 
+# Créer les répertoires nécessaires
+RUN mkdir -p /app/models /app/logs && \
+    chown -R appuser:appuser /app/models /app/logs
+
+# Basculer vers l'utilisateur non-root
+USER appuser
+
+# Exposer le port
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:5000/health')" || exit 1
+
+# Commande de démarrage avec gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "src.app:app"]

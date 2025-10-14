@@ -1,0 +1,119 @@
+name: MLflow Train and Register Model
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      epochs:
+        description: 'Number of epochs'
+        required: false
+        default: '10'
+      auto_promote:
+        description: 'Auto-promote if criteria met'
+        type: boolean
+        default: false
+
+env:
+  MODEL_NAME: mnist-classifier
+  PYTHON_VERSION: "3.10"
+
+jobs:
+  train:
+    name: Train Model
+    runs-on: ubuntu-latest
+    
+    outputs:
+      run_id: ${{ steps.train.outputs.run_id }}
+      accuracy: ${{ steps.train.outputs.accuracy }}
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Create .env file
+      run: |
+        echo "MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}" >> .env
+        echo "MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }}" >> .env
+        echo "MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_PASSWORD }}" >> .env
+        echo "MODEL_NAME=${{ env.MODEL_NAME }}" >> .env
+        echo "EPOCHS=${{ github.event.inputs.epochs || '10' }}" >> .env
+        echo "MIN_ACCURACY=${{ secrets.MIN_ACCURACY || '0.95' }}" >> .env
+        echo "MIN_F1_SCORE=${{ secrets.MIN_F1_SCORE || '0.94' }}" >> .env
+    
+    - name: Run Training
+      id: train
+      run: |
+        python src/train_model.py > train_output.txt
+        RUN_ID=$(grep "Run ID:" train_output.txt | awk '{print $3}')
+        ACCURACY=$(grep "Accuracy:" train_output.txt | awk '{print $2}')
+        echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+        echo "accuracy=$ACCURACY" >> $GITHUB_OUTPUT
+        echo "✓ Training completed. Run ID: $RUN_ID"
+    
+    - name: Upload Training Logs
+      uses: actions/upload-artifact@v3
+      with:
+        name: training-logs
+        path: train_output.txt
+  
+  promote:
+    name: Promote Model
+    needs: train
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event.inputs.auto_promote == 'true'
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install mlflow python-dotenv
+    
+    - name: Create .env file
+      run: |
+        echo "MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}" >> .env
+        echo "MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }}" >> .env
+        echo "MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_PASSWORD }}" >> .env
+        echo "MODEL_NAME=${{ env.MODEL_NAME }}" >> .env
+        echo "MIN_ACCURACY=${{ secrets.MIN_ACCURACY || '0.95' }}" >> .env
+        echo "MIN_F1_SCORE=${{ secrets.MIN_F1_SCORE || '0.94' }}" >> .env
+    
+    - name: Auto-Promote Model
+      run: |
+        python src/auto_promote.py ${{ needs.train.outputs.run_id }}
+      
+    - name: Notify Promotion Status
+      run: |
+        echo "Model promotion process completed for Run ID: ${{ needs.train.outputs.run_id }}"
+        echo "Accuracy: ${{ needs.train.outputs.accuracy }}"
