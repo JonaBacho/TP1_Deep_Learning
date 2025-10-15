@@ -66,8 +66,9 @@ jobs:
     
     - name: Run Training
       id: train
+      working-directory: .
       run: |
-        python src/train_model.py > train_output.txt
+        python -m src.train_model > train_output.txt
         RUN_ID=$(grep "Run ID:" train_output.txt | awk '{print $3}')
         ACCURACY=$(grep "Accuracy:" train_output.txt | awk '{print $2}')
         echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
