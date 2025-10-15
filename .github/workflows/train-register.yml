@@ -21,7 +21,7 @@ on:
 
 env:
   MODEL_NAME: mnist-classifier
-  PYTHON_VERSION: "3.10"
+  PYTHON_VERSION: "3.11"
 
 jobs:
   train:

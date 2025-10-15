@@ -1,15 +1,14 @@
 # Dockerfile
 # Utiliser une image Python slim
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 # Définir les arguments de build
-ARG PYTHON_VERSION=3.10
+ARG PYTHON_VERSION=3.11
 
 # Variables d'environnement
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Créer un utilisateur non-root
 RUN useradd -m -u 1000 appuser && \
