@@ -2,7 +2,7 @@ tensorflow
 numpy
 flask
 mlflow
-gunicorn=
+gunicorn
 python-dotenv
 scikit-learn
 boto3
