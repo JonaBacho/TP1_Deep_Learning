@@ -111,8 +111,9 @@ jobs:
         echo "MIN_F1_SCORE=${{ secrets.MIN_F1_SCORE || '0.94' }}" >> .env
     
     - name: Auto-Promote Model
+      working-directory: .
       run: |
-        python src/auto_promote.py ${{ needs.train.outputs.run_id }}
+        python -m src.auto_promote ${{ needs.train.outputs.run_id }}
       
     - name: Notify Promotion Status
       run: |
