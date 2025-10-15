@@ -9,4 +9,4 @@ boto3==1.28.0
 psycopg2-binary==2.9.7
 requests==2.31.0
 pytest==7.4.2
-importlib-metadata==6.8.0
+importlib-metadata==6.0.0
