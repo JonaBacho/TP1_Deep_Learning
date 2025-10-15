@@ -18,6 +18,7 @@ on:
       - 'src/app.py'
       - 'Dockerfile'
       - 'requirements.txt'
+      - '.github/workflows/deploy.yml'
 
 env:
   REGISTRY: ghcr.io
