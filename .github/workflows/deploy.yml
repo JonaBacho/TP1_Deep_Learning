@@ -34,6 +34,7 @@ jobs:
     
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
+      image_name: ${{ steps.prep.outputs.image_name }}
     
     steps:
     - name: Checkout Repository
