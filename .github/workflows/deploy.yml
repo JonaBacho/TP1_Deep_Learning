@@ -97,7 +97,7 @@ jobs:
     
     - name: Pull Docker Image
       run: |
-        docker pull ${{ steps.prep.outputs.image_name }}
+        docker pull ${{ needs.build.outputs.image_name }}
     
     - name: Test Container Health
       run: |
