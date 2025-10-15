@@ -21,7 +21,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/mnist-mlflow-app
+  IMAGE_NAME: ${{ github.repository_owner }}/mnist-mlflow-app
 
 jobs:
   build:
