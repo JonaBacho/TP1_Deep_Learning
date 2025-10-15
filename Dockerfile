@@ -6,9 +6,9 @@ FROM python:3.11-slim
 ARG PYTHON_VERSION=3.11
 
 # Variables d'environnement
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1
+#ENV PYTHONUNBUFFERED=1 \
+#    PYTHONDONTWRITEBYTECODE=1 \
+#    PIP_NO_CACHE_DIR=1
 
 # Créer un utilisateur non-root
 RUN useradd -m -u 1000 appuser && \
