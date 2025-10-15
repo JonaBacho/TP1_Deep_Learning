@@ -1,9 +1,9 @@
 # Dockerfile
 # Utiliser une image Python slim
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 # Définir les arguments de build
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.10
 
 # Variables d'environnement
 #ENV PYTHONUNBUFFERED=1 \
