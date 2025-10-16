@@ -73,6 +73,26 @@ jobs:
         echo "✓ Environment variables loaded successfully"
     
     - name: Run Training
+      env:
+        # MLflow credentials
+        MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+        MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+        MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+        
+        # S3/Hetzner credentials et configuration
+        MLFLOW_S3_ENDPOINT_URL: ${{ secrets.MLFLOW_S3_ENDPOINT_URL }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        
+        # IMPORTANT pour Hetzner : ignorer la vérification SSL si nécessaire
+        MLFLOW_S3_IGNORE_TLS: true
+        
+        # Forcer l'utilisation du path-style pour Hetzner
+        AWS_S3_ADDRESSING_STYLE: path
+        
+        # Model config
+        MODEL_NAME: ${{ env.MODEL_NAME }}
+        EPOCHS: ${{ github.event.inputs.epochs || '10' }}
       id: train
       working-directory: .
       run: |
