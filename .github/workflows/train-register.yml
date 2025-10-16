@@ -63,6 +63,14 @@ jobs:
         echo "EPOCHS=${{ github.event.inputs.epochs || '10' }}" >> .env
         echo "MIN_ACCURACY=${{ secrets.MIN_ACCURACY || '0.95' }}" >> .env
         echo "MIN_F1_SCORE=${{ secrets.MIN_F1_SCORE || '0.94' }}" >> .env
+
+    - name: Load environment variables
+      run: |
+        set -a
+        source .env
+        set +a
+        env | grep MLFLOW
+        echo "✓ Environment variables loaded successfully"
     
     - name: Run Training
       id: train

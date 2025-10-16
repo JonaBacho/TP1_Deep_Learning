@@ -35,6 +35,8 @@ class MLflowConfig:
         
         if cls.S3_ENDPOINT_URL:
             os.environ['MLFLOW_S3_ENDPOINT_URL'] = cls.S3_ENDPOINT_URL
+            os.environ['MLFLOW_S3_IGNORE_TLS'] = 'true'
+            os.environ['AWS_S3_ADDRESSING_STYLE'] = 'path'
         if cls.AWS_ACCESS_KEY_ID:
             os.environ['AWS_ACCESS_KEY_ID'] = cls.AWS_ACCESS_KEY_ID
         if cls.AWS_SECRET_ACCESS_KEY:
