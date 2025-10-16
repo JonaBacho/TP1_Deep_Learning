@@ -210,19 +210,3 @@ jobs:
           # Test model info endpoint
           curl http://localhost:5000/model/info
         ENDSSH
-
-  notify:
-    name: Notify Deployment Status
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: always()
-    
-    steps:
-    - name: Deployment Status
-      run: |
-        if [ "${{ needs.deploy.result }}" == "success" ]; then
-          echo "✓ Deployment completed successfully!"
-        else
-          echo "❌ Deployment failed!"
-          exit 1
-        fi
