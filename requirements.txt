@@ -1,7 +1,7 @@
 tensorflow
 numpy
 flask
-mlflow
+mlflow==2.10.2
 gunicorn
 python-dotenv
 scikit-learn
