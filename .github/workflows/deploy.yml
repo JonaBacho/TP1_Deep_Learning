@@ -158,7 +158,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_IP_ADDRESS }} << 'ENDSSH'
           cd /home//${{ secrets.REMOTE_USER }}
-          mkdir -p deep_learning deep_learning/${{ env.CONTAINER_NAME }}
+          sudo mkdir -p deep_learning deep_learning/${{ env.CONTAINER_NAME }}
         ENDSSH
     
     - name: Copy deployment files to server
