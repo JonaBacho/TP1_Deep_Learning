@@ -174,7 +174,7 @@ jobs:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_IP_ADDRESS }} << 'ENDSSH'
-          cd /home/${{ secrets.REMOTE_USER }}/mnist-app
+          cd /home/${{ secrets.REMOTE_USER }}/deep_learning/${{ env.CONTAINER_NAME }}/
           
           # Login to GitHub Container Registry
           echo ${{ secrets.GITHUB_TOKEN }} | sudo docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
