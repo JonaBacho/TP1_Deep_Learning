@@ -65,11 +65,12 @@ Copiez le fichier .env.example en .env et remplissez vos accès :
 ```Bash
 cp .env.example .env
 Assurez-vous de bien configurer MLFLOW_TRACKING_URI et les accès S3 pour les artefacts.
+```
 
-🔌 Utilisation
+## 🔌 Utilisation
 Entraînement d'un modèle
 Lancement de l'entraînement avec enregistrement automatique dans MLflow :
-```
+
 
 ```Bash
 python -m src.train_model
